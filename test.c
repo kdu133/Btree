@@ -25,7 +25,8 @@ typedef struct p_idx {
 } p_idx;
 
 // 테스트 함수
-void test_code();
+
+void test_create();
 void test_insert(Btree* bt);
 void test_delete(Btree* bt);
 
@@ -34,8 +35,9 @@ void test_delete(Btree* bt);
 node* create_node(void);
 int find_index(node* cur, int key);
 void split_node(node* parent, int index);
-void bind_node(node* parent, int index);
-void borrow_key(node* parent, int index);
+bool bind_node(Btree* bt, node* parent, int index);
+void borrow_key_from_right(node* parent, int index);
+void borrow_key_from_left(node* parent, int index);
 void delete_node(node*);
 
 // Btree 관련 함수
@@ -43,12 +45,11 @@ void delete_node(node*);
 Btree* create_Btree(void);
 void free_all_node(node* cur);
 bool delete_Btree(Btree* bt);
-void dfs(node* cur, int cnt);
+void print_by_dfs(node* cur, int cnt);
 void print_tree(node* cur, int cnt);
 bool search_key(Btree* bt, int key);
 bool insert_key(Btree* bt, int key);
 bool delete_key(Btree* bt, int key);
-
 
 // 프로그램 실행 관련 함수
 
@@ -58,16 +59,20 @@ void exit_program(void);
 void start_program();
 
 
+// 메인 함수
 
 int main(void) {
-	start_program();
+	Btree* bt = create_Btree();
+	test_insert(bt);
+	test_delete(bt);
+	delete_Btree(bt);
+	//start_program();
 	return true;
 }
 
-
 // 테스트 함수
 
-void test_code() {
+void test_create() {
 	Btree* t = (Btree*)malloc(sizeof(Btree));
 	t->root = create_node();
 	printf("%d %d\n", t->root->isLeaf, t->root->size);
@@ -140,42 +145,79 @@ void test_insert(Btree* bt) {
 }
 
 void test_delete(Btree* bt) {
+	print_tree(bt->root, 0);
 	delete_key(bt, 33);
-	//delete_key(bt, 10);
-	//delete_key(bt, 11);
-	//delete_key(bt, 12);
-	//delete_key(bt, 13);
-	//delete_key(bt, 14);
-	//delete_key(bt, 22);
-	//delete_key(bt, 36);
-	//delete_key(bt, 24);
-	//delete_key(bt, 25);
-	//delete_key(bt, 29);
-	//delete_key(bt, 2);
-	//delete_key(bt, 3);
-	//delete_key(bt, 8);
-	//delete_key(bt, 20);
-	//delete_key(bt, 23);
-	//delete_key(bt, 4);
-	//delete_key(bt, 5);
-	//delete_key(bt, 6);
-	//delete_key(bt, 15);
-	//delete_key(bt, 21);
-	//delete_key(bt, 16);
-	//delete_key(bt, 17);
-	//delete_key(bt, 1);
-	//delete_key(bt, 34);
-	//delete_key(bt, 7);
-	//delete_key(bt, 30);
-	//delete_key(bt, 31);
-	//delete_key(bt, 32);
-	//delete_key(bt, 9);
-	//delete_key(bt, 18);
-	//delete_key(bt, 19);
-	//delete_key(bt, 35);
-	//delete_key(bt, 26);
-	//delete_key(bt, 27);
-	//delete_key(bt, 28);
+	print_tree(bt->root, 0);
+	delete_key(bt, 10);
+	print_tree(bt->root, 0);
+	delete_key(bt, 11);
+	print_tree(bt->root, 0);
+	delete_key(bt, 12);
+	print_tree(bt->root, 0);
+	delete_key(bt, 13);
+	print_tree(bt->root, 0);
+	delete_key(bt, 14);
+	print_tree(bt->root, 0);
+	delete_key(bt, 22);
+	print_tree(bt->root, 0);
+	delete_key(bt, 36);
+	print_tree(bt->root, 0);
+	delete_key(bt, 24);
+	print_tree(bt->root, 0);
+	delete_key(bt, 25);
+	print_tree(bt->root, 0);
+	delete_key(bt, 29);
+	print_tree(bt->root, 0);
+	delete_key(bt, 2);
+	print_tree(bt->root, 0);
+	delete_key(bt, 3);
+	print_tree(bt->root, 0);
+	delete_key(bt, 8);
+	print_tree(bt->root, 0);
+	delete_key(bt, 20);
+	print_tree(bt->root, 0);
+	delete_key(bt, 23);
+	print_tree(bt->root, 0);
+	delete_key(bt, 4);
+	print_tree(bt->root, 0);
+	delete_key(bt, 5);
+	print_tree(bt->root, 0);
+	delete_key(bt, 6);
+	print_tree(bt->root, 0);
+	delete_key(bt, 15);
+	print_tree(bt->root, 0);
+	delete_key(bt, 21);
+	print_tree(bt->root, 0);
+	delete_key(bt, 16);
+	print_tree(bt->root, 0);
+	delete_key(bt, 17);
+	print_tree(bt->root, 0);
+	delete_key(bt, 1);
+	print_tree(bt->root, 0);
+	delete_key(bt, 34);
+	print_tree(bt->root, 0);
+	delete_key(bt, 7);
+	print_tree(bt->root, 0);
+	delete_key(bt, 30);
+	print_tree(bt->root, 0);
+	delete_key(bt, 31);
+	print_tree(bt->root, 0);
+	delete_key(bt, 32);
+	print_tree(bt->root, 0);
+	delete_key(bt, 9);
+	print_tree(bt->root, 0);
+	delete_key(bt, 18);
+	print_tree(bt->root, 0);
+	delete_key(bt, 19);
+	print_tree(bt->root, 0);
+	delete_key(bt, 35);
+	print_tree(bt->root, 0);
+	delete_key(bt, 26);
+	print_tree(bt->root, 0);
+	delete_key(bt, 27);
+	print_tree(bt->root, 0);
+	delete_key(bt, 28);
+	print_tree(bt->root, 0);
 }
 
 
@@ -243,7 +285,7 @@ void split_node(node* parent, int index) {
 	parent->size += 1;
 }
 
-void bind_node(node* parent, int index) {
+bool bind_node(Btree* bt, node* parent, int index) {
 	node* left_child = parent->p_arr[index];
 	node* right_child = parent->p_arr[index + 1];
 	int left_size = left_child->size;
@@ -259,9 +301,10 @@ void bind_node(node* parent, int index) {
 	for (int i = 0; i < right_size; i++) {
 		left_child->keys[left_size + 1 + i] = right_child->keys[i];
 	}
-
-	for (int i = 0; i < right_size + 1; i++) {
-		left_child->p_arr[left_size + 1 + i] = right_child->p_arr[i];
+	if (!left_child->isLeaf) {
+		for (int i = 0; i < right_size + 1; i++) {
+			left_child->p_arr[left_size + 1 + i] = right_child->p_arr[i];
+		}
 	}
 
 	// 왼쪽 자식의 키가 늘어났기 때문에 크기를 조정해준다
@@ -271,6 +314,7 @@ void bind_node(node* parent, int index) {
 	for (int i = index; i < parent->size - 1; i++) {
 		parent->keys[i] = parent->keys[i + 1];
 	}
+	
 	for (int i = index + 1; i < parent->size; i++) {
 		parent->p_arr[i] = parent->p_arr[i + 1];
 	}
@@ -279,30 +323,79 @@ void bind_node(node* parent, int index) {
 
 	// 오른쪽 노드는 저장된 값이 없기 때문에 메모리를 반환해준다
 	free(right_child);
+
+	// 부모의 크기가 0 이면(루트일 때만 발생) 
+	if (parent->size == 0) {
+		free(bt->root);
+		bt->root = left_child;
+		return true;
+	}
+	return false;
 }
 
-void borrow_key(node* parent, int index) {
+void borrow_key_from_right(node* parent, int index) {
 	node* left_child = parent->p_arr[index];
 	node* right_child = parent->p_arr[index + 1];
-	int left_size = left_child->size;
-	int right_size = right_child->size;
 
 	// 왼쪽 노드의 끝에 부모 노드의 현재 위치 값을 저장한다
-	left_child->keys[T-1] = parent->keys[index];
+	left_child->keys[left_child->size] = parent->keys[index];
 	// 왼쪽 노드의 크기를 1 증가 시킨다
 	left_child->size += 1;
+
 	// 부모 노드의 키 값은 오른쪽 자식의 맨 앞의 값을 가져온다
 	parent->keys[index] = right_child->keys[0];
-	// 왼쪽 노드의 제일 오른쪽 값은 오른쪽 자식의 맨 앞의 값이 가리키던 값을 가져온다
-	left_child->p_arr[T] = right_child->p_arr[0];
-	// 왼쪽 노드의 크기는 T가 되고
-	left_child->size = T;
+
+	// 왼쪽 노드가 리프노드가 아니면 왼쪽 노드의 제일 오른쪽 값은 오른쪽 자식의 맨 앞의 값이 가리키던 값을 가져온다
+	if (!left_child->isLeaf) {
+		left_child->p_arr[left_child->size] = right_child->p_arr[0];
+	}
+
 	// 오른쪽 노드의 크기는 1 줄어든다
 	right_child->size -= 1;
+
 	// 오른쪽 노드의 맨 앞에서 뺀 키 값을 차례로 채워준다
-	for (int i = 0; i < right_child->size - 1; i++) {
+	for (int i = 0; i < right_child->size; i++) {
 		right_child->keys[i] = right_child->keys[i + 1];
 	}
+	// 오른쪽 노드의 맨 앞에서 뺀 포인터 값도 차례로 채워준다
+	if (!right_child->isLeaf) {
+		for (int i = 0; i < right_child->size + 1; i++) {
+			right_child->p_arr[i] = right_child->p_arr[i + 1];
+		}
+	}
+}
+
+void borrow_key_from_left(node* parent, int index) {
+	node* left_child = parent->p_arr[index];
+	node* right_child = parent->p_arr[index + 1];
+
+	// 오른쪽 노드의 맨 앞에 키가 들어갈 자리를 만들기 위해 값을 한 칸씩 뒤로 옮긴다
+	for (int i = right_child->size; 0 < i; i--) {
+		right_child->keys[i] = right_child->keys[i - 1];
+	}
+
+	if (!right_child->isLeaf) {
+		// 오른쪽 노드의 맨 앞에 포인터가 들어갈 자리를 만들기 위해 값을 한 칸씩 뒤로 옮긴다
+		for (int i = right_child->size + 1; 0 < i; i--) {
+			right_child->p_arr[i] = right_child->p_arr[i - 1];
+		}
+	}
+
+	// 오른쪽 노드의 맨 앞에 부모 노드의 현재 위치 값을 저장한다
+	right_child->keys[0] = parent->keys[index];
+	// 오른쪽 노드의 크기를 1 증가 시킨다
+	right_child->size += 1;
+
+	// 부모 노드의 키 값은 왼쪽 자식의 끝 값을 가져온다
+	parent->keys[index] = left_child->keys[left_child->size-1];
+
+	// 왼쪽 노드의 제일 오른쪽 값은 오른쪽 자식의 맨 앞의 값이 가리키던 값을 가져온다
+	if (!left_child->isLeaf) {
+		right_child->p_arr[0] = left_child->p_arr[left_child->size];
+	}
+
+	// 오른쪽 노드의 크기는 1 줄어든다
+	left_child->size -= 1;
 }
 
 void delete_node(node* cur) {
@@ -335,7 +428,7 @@ bool delete_Btree(Btree* bt) {
 	return true;
 }
 
-void dfs(node* cur, int cnt) {
+void print_by_dfs(node* cur, int cnt) {
 	if (cur->isLeaf) {
 		for (int i = 0; i < cnt; i++) {
 			printf("--------------------|");
@@ -347,21 +440,19 @@ void dfs(node* cur, int cnt) {
 	}
 	else {
 		for (int i = 0; i < cur->size; i++) {
-			if (!cur->isLeaf) {
-				dfs(cur->p_arr[i], cnt + 1);
-			}
+			print_by_dfs(cur->p_arr[i], cnt + 1);
 			for (int i = 0; i < cnt; i++) {
 				printf("--------------------|");
 			}
 			printf("%4d            \n", cur->keys[i]);
 		}
-		dfs(cur->p_arr[cur->size], cnt + 1);
+		print_by_dfs(cur->p_arr[cur->size], cnt + 1);
 	}
 }
 
 void print_tree(node* cur, int cnt) {
-	dfs(cur, cnt);
-	printf("\n");
+	print_by_dfs(cur, cnt);
+	printf("\n\n");
 }
 
 bool search_key(Btree* bt, int key) {
@@ -446,7 +537,7 @@ bool delete_key(Btree* bt, int key) {
 			// 다음 방문할 노드의 크기가 T보다 크거나 같으면
 			if (cur->p_arr[index]->size >= T) {
 				// 다음 노드에서 key보다 선행하는 값을 key 값 위치에 저장
-				cur->keys[index] = cur->p_arr[index]->keys[find_index(cur->p_arr[index], key)];
+				cur->keys[index] = cur->p_arr[index]->keys[cur->p_arr[index]->size-1];
 				// 키를 갱신하고 삭제 과정을 계속
 				key = cur->keys[index];
 			}
@@ -461,27 +552,52 @@ bool delete_key(Btree* bt, int key) {
 			}
 			// 다음 방문할 노드의 형제(오른쪽)노드의 크기도 T보다 작으면
 			else {
-				bind_node(cur, index);
+				if (bind_node(bt, cur, index)) {
+					cur = bt->root;
+					continue;
+				}
 			}
 		}
 		// 다음에 방문할 노드의 크기가 T보다 작다면
 		if (cur->p_arr[index]->size < T) {
-			// 다음 방문할 노드의 형제(오른쪽)노드의 크기가 T보다 크거나 같으면
-			if (cur->p_arr[index + 1]->size >= T) {
-				// 왼쪽 오른쪽 구분해서 만들것
-				borrow_key(cur, index);
+			// 다음 방문할 노드가 가장 오른쪽이 아니면
+			if (index < cur->size) {
+				// 다음 방문할 노드의 오른쪽 노드의 크기가 T보다 크거나 같으면
+				if (cur->p_arr[index + 1]->size >= T) {
+					// 오른쪽 노드에서 빌린다
+					borrow_key_from_right(cur, index);
+				}
+				// 다음 방문할 노드의 형제(오른쪽)노드의 크기도 T보다 작으면
+				else {
+					if (bind_node(bt, cur, index)) {
+						cur = bt->root;
+						continue;
+					}
+				}
 			}
-			// 다음 방문할 노드의 형제(오른쪽)노드의 크기도 T보다 작으면
+			// 다음 방문할 노드가 가장 오른쪽이면
 			else {
-				bind_node(cur, index);
+				// 다음 방문할 노드의 왼쪽 노드의 크기가 T보다 크거나 같으면
+				if (cur->p_arr[index-1]->size >= T) {
+					// 왼쪽 노드에서 빌린다
+					borrow_key_from_left(cur, index-1);
+				}
+				// 다음 방문할 노드의 형제 왼쪽 노드의 크기도 T보다 작으면
+				else {
+					index -= 1;
+					if (bind_node(bt, cur, index)) {
+						cur = bt->root;
+						continue;
+					}
+				}
 			}
 		}
 		cur = cur->p_arr[index];
 	}
 
 	// 리프노드에 도착한 후 키를 삭제
-
-	for (int i = index; i < cur->size; i++) {
+	index = find_index(cur, key);
+	for (int i = index; i < cur->size - 1; i++) {
 		cur->keys[i] = cur->keys[i + 1];
 	}
 	cur->size -= 1;
